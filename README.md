@@ -8,3 +8,7 @@ HITOKOTO-DESKTOP-NG
 ```shell
 hack/build.sh
 ```
+
+# 致谢
+
+本项目使用了开源字体：[霞鹜文楷](https://github.com/lxgw/LxgwWenKai) 
