@@ -1,0 +1,15 @@
+{
+  "name" : "hitokoto-desktop-ng",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "e590c2b30c08caf1dd8d612ec602a003f9784b7d",
+  "dependencies" : [ {
+    "name" : "curl",
+    "version>=" : "8.9.1"
+  }, {
+    "name" : "nlohmann-json",
+    "version>=" : "3.11.3#1"
+  }, {
+    "name" : "tinyxml2",
+    "version>=" : "10.0.0"
+  } ]
+}
