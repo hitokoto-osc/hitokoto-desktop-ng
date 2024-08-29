@@ -67,11 +67,16 @@ void HitokotoWidget::getHitokotoByNetwork()
     text = "";
 
     if (jsonData["from_who"] != nullptr) {
-        fromWho = std::format("「{}」", std::string(jsonData["from_who"]));
+        fromWho = std::string(jsonData["from_who"]);
     }
 
     if (jsonData["from"] != nullptr) {
-        from = std::string(jsonData["from"]);
+        std::string ori(jsonData["from"]);
+        if (fromWho == ori) {
+            fromWho = "";
+        }
+
+        from = std::format("「{}」", ori);
     }
 
     if (jsonData["creator"] != nullptr) {
@@ -163,6 +168,10 @@ bool HitokotoWidget::loadCache()
 
 void HitokotoWidget::renderText()
 {
+    ui->contents->setText("");
+    ui->from->setText("");
+    repaint();
+
     ui->contents->setText(text.c_str());
     ui->from->setText(std::format("—— {}{}", fromWho, from).c_str());
 
