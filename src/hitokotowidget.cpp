@@ -67,11 +67,16 @@ void HitokotoWidget::getHitokotoByNetwork()
     text = "";
 
     if (jsonData["from_who"] != nullptr) {
-        fromWho = std::format("「{}」", std::string(jsonData["from_who"]));
+        fromWho = std::string(jsonData["from_who"]);
     }
 
     if (jsonData["from"] != nullptr) {
-        from = std::string(jsonData["from"]);
+        std::string ori(jsonData["from"]);
+        if (fromWho == ori) {
+            fromWho = "";
+        }
+
+        from = std::format("「{}」", ori);
     }
 
     if (jsonData["creator"] != nullptr) {
@@ -91,10 +96,12 @@ HitokotoWidget::HitokotoWidget(QWidget* parent)
 
     // 设置 WindowStaysOnTopHint 且未设置 Qt::WA_StyledBackground 时无法实现拖拽
     // 此时只能在鼠标移出边缘之后，再将窗口置顶
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    // Qt::NoDropShadowWindowHint 解决透明窗口残影
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
     // 设置背景透明，但是有背景
     setAttribute(Qt::WA_StyledBackground);
+    setFixedSize(1200, 110);
     // 初始化任务栏图标
     initTray();
 
@@ -105,12 +112,12 @@ HitokotoWidget::HitokotoWidget(QWidget* parent)
 
     QFont font;
     font.setFamilies(QFontDatabase::applicationFontFamilies(fontID));
-    font.setPointSize(35);
+    font.setPointSize(38);
     ui->contents->setFont(font);
 
     QFont font1;
     font1.setFamilies(QFontDatabase::applicationFontFamilies(fontID));
-    font1.setPointSize(18);
+    font1.setPointSize(20);
     ui->from->setFont(font1);
 
     if (bool loaded = loadCache(); loaded) {
@@ -163,11 +170,12 @@ bool HitokotoWidget::loadCache()
 
 void HitokotoWidget::renderText()
 {
+    ui->contents->setText("");
+    ui->from->setText("");
+    repaint();
+
     ui->contents->setText(text.c_str());
     ui->from->setText(std::format("—— {}{}", fromWho, from).c_str());
-
-    ui->contents->repaint();
-    ui->from->repaint();
 }
 
 void HitokotoWidget::refreshHitokotoFromNetwork()
@@ -200,11 +208,12 @@ void HitokotoWidget::mouseMoveEvent(QMouseEvent* e)
 
 bool HitokotoWidget::event(QEvent* event)
 {
-    if (event->type() == QEvent::Enter) {
+    auto type = event->type();
+    if (type == QEvent::Enter || type == QEvent::WindowActivate) {
         setStyleSheet("background-color: rgba(1, 1, 1, 0.1);");
     }
 
-    if (event->type() == QEvent::Leave) {
+    if (type == QEvent::Leave || type == QEvent::WindowDeactivate) {
         setStyleSheet("background-color: rgba(1, 1, 1, 0);");
     }
 
